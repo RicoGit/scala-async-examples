@@ -1,4 +1,4 @@
-name := "zio-examples"
+name := "scala-async-examples"
 
 version := "0.1"
 
