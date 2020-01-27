@@ -63,6 +63,8 @@ object Cases {
 
     def doZio[E, T](t: T): IO[E, T] = IO.fromEither(Right(t))
 
+    // ZIO doesn't need case with Either. Either already inside ZIO
+
   }
 
 }
