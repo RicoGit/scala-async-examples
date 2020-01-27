@@ -32,26 +32,39 @@ object cases {
   }
 
   // Monix
+  object monix {
 
-  def doMonix[T](t: T): MonixTask[T] = MonixTask(t)
+    def doMonix[T](t: T): MonixTask[T] = MonixTask(t)
 
-  def doMonixEither[E, T](t: T): MonixTask[Either[E, T]] = MonixTask(Right(t))
+    def doMonixEither[E, T](t: T): MonixTask[Either[E, T]] = MonixTask(Right(t))
+
+  }
 
   //  twitter future
+  object twitterFuture {
 
-  def doTFuture[E, T](t: T): TFuture[Either[E, T]] = TFuture(Right(t))
+    def doTFuture[E, T](t: T): TFuture[Either[E, T]] = TFuture(Right(t))
 
-  def doTFutureEither[T](t: T): TFuture[T] = TFuture.value(t)
+    def doTFutureEither[T](t: T): TFuture[T] = TFuture.value(t)
 
+  }
   // scala future
 
-  def doFuture[E, T](t: T)(implicit ec: ExecutionContext): Future[Either[E, T]] = Future(Right(t))
+  object scalaFuture {
 
-  def doFutureEither[T](t: T): Future[T] = Future.successful(t)
+    def doFuture[E, T](t: T)(implicit ec: ExecutionContext): Future[Either[E, T]] = Future(Right(t))
+
+    def doFutureEither[T](t: T): Future[T] = Future.successful(t)
+
+  }
 
   // ZIO
 
-  def doZio[E, T](t: T): IO[E, T] = IO.fromEither(Right(t))
+  object zio {
+
+    def doZio[E, T](t: T): IO[E, T] = IO.fromEither(Right(t))
+
+  }
 
 }
 
@@ -62,6 +75,8 @@ object Main extends App {
       .map { _ =>
         ZioInterop.withFinalTagless()
         ZioInterop.withCatsIO()
+        ZioInterop.withMonix()
+        ZioInterop.withTwitterFuture()
         0
       }
 
@@ -69,9 +84,10 @@ object Main extends App {
 
 /** Interop between ZIO and other stuff each call should be mapped to IO[E, T] **/
 object ZioInterop {
-  import zio.interop.catz._
 
   def withFinalTagless(): Unit = {
+    import zio.interop.catz._
+
     println("ZIO with cats tagless final: ")
     val res1: Task[String] = cases.taglessFinal.doAsync[Task, String]("async")
     val res11: IO[Int, String] = res1.mapError(_.getMessage.length)
@@ -92,16 +108,39 @@ object ZioInterop {
   }
 
   def withCatsIO(): Unit = {
+    import zio.interop.catz._
+
     println("ZIO with cats effect IO: ")
 
     val res1: Task[String] = cases.catsIO.doIo[String]("cats io").to[Task]
     val res11: IO[Int, String] = res1.mapError(_.getMessage.length)
     show(res11)
 
-    val res2: Task[Either[Int, String]] = cases.catsIO.doIoEither[Int, String]("cats io either").to[Task]
+    val res2: Task[Either[Int, String]] =
+      cases.catsIO.doIoEither[Int, String]("cats io either").to[Task]
     val res22: IO[Int, String] = res2.mapError(_.getMessage.length).absolve
     show(res22)
   }
+
+  def withMonix(): Unit = {
+    import zio.interop.monix._
+    import monix.execution.Scheduler.Implicits.global
+
+    println("ZIO with Monix: ")
+
+    val res1: Task[String] = IO.fromTask(cases.monix.doMonix[String]("monix task"))
+    val res11: IO[Int, String] = res1.mapError(_.getMessage.length)
+    show(res11)
+
+    val res2: Task[Either[Int, String]] =
+      IO.fromTask(cases.monix.doMonixEither[Int, String]("monix task either"))
+    val res22: IO[Int, String] = res2.mapError(_.getMessage.length).absolve
+    show(res22)
+
+  }
+
+  def withTwitterFuture(): Unit =
+    println("ZIO with Twitter Future: ")
 
   def show[E, T](io: IO[E, T]): Unit = println(" - " + unsafeRun(io))
 }
