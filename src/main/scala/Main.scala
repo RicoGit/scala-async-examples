@@ -61,6 +61,7 @@ object Main extends App {
     putStrLn("Hello world!")
       .map { _ =>
         ZioInterop.withFinalTagless()
+        ZioInterop.withCatsIO()
         0
       }
 
@@ -74,20 +75,33 @@ object ZioInterop {
     println("ZIO with cats tagless final: ")
     val res1: Task[String] = cases.taglessFinal.doAsync[Task, String]("async")
     val res11: IO[Int, String] = res1.mapError(_.getMessage.length)
-    println(unsafeRun(res11))
+    show(res11)
 
     val res2: Task[Either[Int, String]] =
       cases.taglessFinal.doAsyncEither[Task, Int, String]("async either")
     val res22: IO[Int, String] = res2.mapError(_.getMessage.length).absolve
-    println(unsafeRun(res22))
+    show(res22)
 
     {
       implicit val runtime: DefaultRuntime = new DefaultRuntime {}
       val res3: Task[Either[Int, String]] =
         cases.taglessFinal.doEffect[Task, Int, String]("effect")
       val res33: IO[Int, String] = res3.mapError(_.getMessage.length).absolve
-      println(unsafeRun(res33))
+      show(res33)
     }
   }
 
+  def withCatsIO(): Unit = {
+    println("ZIO with cats effect IO: ")
+
+    val res1: Task[String] = cases.catsIO.doIo[String]("cats io").to[Task]
+    val res11: IO[Int, String] = res1.mapError(_.getMessage.length)
+    show(res11)
+
+    val res2: Task[Either[Int, String]] = cases.catsIO.doIoEither[Int, String]("cats io either").to[Task]
+    val res22: IO[Int, String] = res2.mapError(_.getMessage.length).absolve
+    show(res22)
+  }
+
+  def show[E, T](io: IO[E, T]): Unit = println(" - " + unsafeRun(io))
 }
