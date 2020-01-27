@@ -14,6 +14,7 @@ libraryDependencies ++= Seq(
 
 // Twitter futures
   "com.twitter" %% "util-core" % "19.12.0",
+  "io.catbird" %% "catbird-effect" % "19.10.0",
 
 // Cats Effect
   "org.typelevel" %% "cats-effect" % "2.0.0",

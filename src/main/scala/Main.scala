@@ -1,4 +1,4 @@
-import interoperabillity.{ScalaFutureInterop, ZioInterop}
+import interoperabillity.{CatsIOInterop, ScalaFutureInterop, ZioInterop}
 import zio.console._
 import zio._
 
@@ -18,6 +18,12 @@ object Main extends App {
         ScalaFutureInterop.withMonix()
         ScalaFutureInterop.withTwitterFuture()
         ScalaFutureInterop.withZio()
+
+        CatsIOInterop.withFinalTagless()
+        CatsIOInterop.withMonix()
+        CatsIOInterop.withTwitterFuture()
+        CatsIOInterop.withScalaFuture()
+        CatsIOInterop.withZio()
 
         0
       }
