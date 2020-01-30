@@ -1,6 +1,6 @@
 package interoperabillity
 
-import cats.effect.{ConcurrentEffect, ContextShift, IO => CatsIO}
+import cats.effect.{ContextShift, IO => CatsIO}
 import zio.{DefaultRuntime, Task}
 
 import scala.concurrent.ExecutionContext
@@ -75,12 +75,13 @@ object CatsIOInterop {
   def withZio(): Unit = {
     println("Cats IO with ZIO: ")
 
+    import cats.effect.implicits._
     import zio.interop.catz._
     implicit val runtime: DefaultRuntime = new DefaultRuntime {}
 
     val res1: Task[Either[RuntimeException, String]] =
       Cases.zio.doZio[RuntimeException, String]("zio").either
-    val res11 = ConcurrentEffect.toIOFromRunCancelable(res1)
+    val res11: CatsIO[Either[RuntimeException, String]] = res1.toIO
     show(res11)
   }
 

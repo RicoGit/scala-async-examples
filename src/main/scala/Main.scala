@@ -1,6 +1,7 @@
-import interoperabillity.{CatsIOInterop, ScalaFuturesInterop, TwitterFuturesInterop, ZioInterop}
+import interoperabillity.{CatsFinalTagless, CatsIOInterop, ScalaFuturesInterop, TwitterFuturesInterop, ZioInterop}
 import zio.console._
 import zio._
+import cats.effect.{IO => CatsIO}
 
 object Main extends App {
 
@@ -31,7 +32,11 @@ object Main extends App {
         TwitterFuturesInterop.withScalaFuture()
         TwitterFuturesInterop.withZio()
 
-        // todo cats FinalTagless
+        CatsFinalTagless.withCatsIO[CatsIO]()
+        CatsFinalTagless.withMonix[CatsIO]()
+        CatsFinalTagless.withTwitterFuture[CatsIO]()
+        CatsFinalTagless.withScalaFuture[CatsIO]()
+        CatsFinalTagless.withZio[CatsIO]()
 
         0
       }
