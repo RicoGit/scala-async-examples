@@ -2,9 +2,11 @@
 
 ## Interoperability between all libraries
 
-- Cats Effect IO - [CatsIOInterop](src/interoperabillity/CatsIOInterot)
-- Cats FinalTagless - [CatsFinalTaglessInterop](src/interoperabillity/CatsFinalTaglessInterop)
-- ZIO - [ZioInterop](src/interoperabillity/ZioInterop)
-- Monix - [MonixInterop](src/interoperabillity/MonixInterop)
-- Scala Futures - [ScalaFuturesInterop](src/interoperabillity/ScalaFuturesInterop)
-- Twitter Futures - [TwitterFutureInterop](src/interoperabillity/TwitterFutureInterop)
+Interop cases - [Cases.scala](src/main/scala/interoperabillity/Cases.scala)
+
+- Cats Effect IO - [CatsIOInterop.scala](src/main/scala/interoperabillity/CatsIOInterot.scala)
+- Cats FinalTagless - [CatsFinalTaglessInterop.scala](src/main/scala/interoperabillity/CatsFinalTaglessInterop.scala)
+- ZIO - [ZioInterop.scala](src/main/scala/interoperabillity/ZioInterop.scala)
+- Monix - [MonixInterop.scala](src/main/scala/interoperabillity/MonixInterop.scala)
+- Scala Futures - [ScalaFuturesInterop.scala](src/main/scala/interoperabillity/ScalaFuturesInterop.scala)
+- Twitter Futures - [TwitterFutureInterop.scala](src/main/scala/interoperabillity/TwitterFutureInterop.scala)

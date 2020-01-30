@@ -1,14 +1,13 @@
 package interoperabillity
 
 import cats.effect.{ContextShift, IO => CatsIO}
-import com.twitter.util.{Return, Throw, Future => TFuture}
-import zio.{DefaultRuntime, IO, Task, UIO}
+import zio.DefaultRuntime
 
 import scala.concurrent.duration.Duration
-import scala.concurrent.{Await, ExecutionContext, Future, Promise}
+import scala.concurrent.{Await, ExecutionContext, Future}
 
 /** Interop between Scala Future and other stuff. **/
-object ScalaFutureInterop {
+object ScalaFuturesInterop {
 
   def withFinalTagless(): Unit = {
     println("Scala Future with cats tagless final: ")
@@ -68,29 +67,14 @@ object ScalaFutureInterop {
 
     val res2: Future[Either[Int, String]] =
       Cases.monix.doMonixEither[Int, String]("monix task either").runToFuture
-    val res22: Future[Either[Int, String]] = res2
-    show(res22)
+    show(res2)
 
-  }
-
-  /**
-    * Convert from a Twitter Future to a Scala Future
-    * Official way: https://twitter.github.io/util/guide/util-cookbook/futures.html#conversions-between-twitter-s-future-and-scala-s-future
-    * */
-  implicit class RichTwitterFuture[A](val tf: TFuture[A]) extends AnyVal {
-    def asScalaFuture(implicit e: ExecutionContext): Future[A] = {
-      val promise: Promise[A] = Promise()
-      tf.respond {
-        case Return(value)    => promise.success(value)
-        case Throw(exception) => promise.failure(exception)
-      }
-      promise.future
-    }
   }
 
   def withTwitterFuture(): Unit = {
     println("Scala Future with Twitter Future: ")
 
+    import interoperabillity.TwitterFuturesInterop.RichTwitterFuture
     implicit val ex: ExecutionContext = ExecutionContext.global
 
     val res1: Future[String] = Cases.twitter.doFuture[String]("twitter future").asScalaFuture
