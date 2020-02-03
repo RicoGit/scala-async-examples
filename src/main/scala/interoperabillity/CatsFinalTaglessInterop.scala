@@ -9,7 +9,7 @@ import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Failure, Success}
 
 /** Interop between Cats Final Tagless and other stuff. **/
-object CatsFinalTagless {
+object CatsFinalTaglessInterop {
 
   def withCatsIO[F[_]: Async](): Unit = {
     println("Cats FinalTagless with cats IO: ")
