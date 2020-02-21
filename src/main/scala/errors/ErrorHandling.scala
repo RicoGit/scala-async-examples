@@ -234,4 +234,21 @@ object ErrorHandling {
 
   }
 
+  def errorHelper(): Unit = {
+    import cats.implicits._
+    import errors.ErrorHelpers.syntax._
+
+    implicit val from: ParseErr => Throwable = err => new Exception(err.msg)
+
+    val e1: Either[ParseErr, String] = ParseErr("error").asLeft
+    val e2: Either[Exception, String] = new Exception("error").asLeft
+
+    val result = for {
+      v1 <- e1.errorAs[Throwable]
+      v2 <- e1.mapError(err => new Exception(err.msg))
+      v3 <- e2
+    } yield ()
+
+  }
+
 }
