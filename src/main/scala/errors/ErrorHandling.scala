@@ -251,4 +251,47 @@ object ErrorHandling {
 
   }
 
+  /** F[ Either[E, T] ] is bad composable */
+  def FWithEither(): Unit = {
+    import cats.implicits._
+
+    val action1: IO[Either[ParseErr, String]] = IO("value".asRight)
+    val action2: IO[Either[ParseErr, String]] = IO(ParseErr("parse err").asLeft)
+    val action3: IO[Either[ParseErr, String]] = IO.raiseError(new Exception("exception"))
+
+    val res = for {
+      value <- action1
+      value2 <- value.map(_ => action2).getOrElse(IO(value))
+      value3 <- value2 match {
+        case err @ Left(_) => IO(err)
+        case Right(value)  => action3
+      }
+    } yield value3
+
+    println(res.unsafeRunSync()) // return Left(ParseErr(parse err))
+
+  }
+
+  def eitherT(): Unit = {
+    import cats.implicits._
+
+    val right: EitherT[IO, ParseErr, String] = EitherT.right(IO("value"))
+    val left: EitherT[IO, ParseErr, String] = EitherT.leftT(ParseErr("parse err"))
+    val error = EitherT(IO.raiseError[Either[ParseErr, String]](new Exception("exception")))
+
+    val res1 = for {
+      value <- right
+      leftErr <- left
+    } yield println("never prints")
+
+    val res2 = for {
+      value <- right
+      err <- error
+    } yield println("never prints")
+
+    println(res1.value.unsafeRunSync()) // return Left(ParseErr(parse err))
+    println(res2.value.unsafeRunSync()) // throws exception
+
+  }
+
 }
