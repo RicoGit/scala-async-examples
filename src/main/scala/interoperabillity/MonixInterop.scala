@@ -2,7 +2,7 @@ package interoperabillity
 
 import monix.eval.Task
 import monix.execution.Scheduler
-import zio.{DefaultRuntime, Task => ZTask}
+import zio.{BootstrapRuntime, Task => ZTask}
 
 /** Interop between Monix and other stuff. **/
 object MonixInterop {
@@ -54,7 +54,9 @@ object MonixInterop {
     show(res11)
 
     val res2: Task[Either[Int, String]] =
-      futureToAsync[Task, Either[Int, String]](Cases.twitter.doFutureEither[Int, String]("twitter future either"))
+      futureToAsync[Task, Either[Int, String]](
+        Cases.twitter.doFutureEither[Int, String]("twitter future either")
+      )
     show(res2)
   }
 
@@ -78,9 +80,10 @@ object MonixInterop {
 
     import monix.execution.Scheduler.Implicits.global
     import zio.interop.monix._
-    implicit val runtime: DefaultRuntime = new DefaultRuntime {}
+    implicit val runtime: BootstrapRuntime = new BootstrapRuntime {}
 
-    val res1: ZTask[Either[RuntimeException, String]] = Cases.zio.doZio[RuntimeException, String]("zio").either
+    val res1: ZTask[Either[RuntimeException, String]] =
+      Cases.zio.doZio[RuntimeException, String]("zio").either
     val res11: Task[Either[RuntimeException, String]] = runtime.unsafeRun(res1.toTask)
     show(res11)
   }

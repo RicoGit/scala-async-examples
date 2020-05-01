@@ -3,7 +3,7 @@ package interoperabillity
 import cats.effect.{Async, ContextShift, IO => CatsIO}
 import cats.effect.implicits._
 import cats.implicits._
-import zio.{DefaultRuntime, Task}
+import zio.{BootstrapRuntime, Task}
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Failure, Success}
@@ -32,7 +32,8 @@ object CatsFinalTaglessInterop {
     val res11 = res1.attempt.map(_.left.map(_.getMessage.length))
     show(res11)
 
-    val res2: F[Either[Int, String]] = Cases.monix.doMonixEither[Int, String]("monix task either").to[F]
+    val res2: F[Either[Int, String]] =
+      Cases.monix.doMonixEither[Int, String]("monix task either").to[F]
     show(res2)
 
   }
@@ -48,7 +49,9 @@ object CatsFinalTaglessInterop {
     show(res11)
 
     val res2: F[Either[Int, String]] =
-      futureToAsync[F, Either[Int, String]](Cases.twitter.doFutureEither[Int, String]("twitter future either"))
+      futureToAsync[F, Either[Int, String]](
+        Cases.twitter.doFutureEither[Int, String]("twitter future either")
+      )
     show(res2)
   }
 
@@ -80,7 +83,7 @@ object CatsFinalTaglessInterop {
     println("Cats TaglessFinal with ZIO: ")
 
     import zio.interop.catz._
-    implicit val runtime: DefaultRuntime = new DefaultRuntime {}
+    implicit val runtime: BootstrapRuntime = new BootstrapRuntime {}
 
     val res1: Task[Either[RuntimeException, String]] =
       Cases.zio.doZio[RuntimeException, String]("zio").either

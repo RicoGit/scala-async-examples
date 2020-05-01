@@ -1,8 +1,8 @@
 package interoperabillity
 
 import cats.effect.{Async, ConcurrentEffect, IO => CatsIO}
-import com.twitter.util.{Future                 => TFuture}
-import monix.eval.{Task                         => MonixTask}
+import com.twitter.util.{Future => TFuture}
+import monix.eval.{Task => MonixTask}
 import zio.IO
 
 import scala.concurrent.Future

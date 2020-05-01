@@ -1,10 +1,10 @@
 package interoperabillity
 
-import cats.effect.{ContextShift, IO                            => CatsIO}
+import cats.effect.{ContextShift, IO => CatsIO}
 import com.twitter.util.{Await, Duration, Return, Throw, Future => TFuture, Promise => TPromise}
 import monix.eval.Task
 import monix.execution.Scheduler
-import zio.DefaultRuntime
+import zio.BootstrapRuntime
 
 import scala.concurrent.{ExecutionContext, Future, Promise}
 import scala.util.{Failure, Success}
@@ -141,7 +141,7 @@ object TwitterFuturesInterop {
   def withZio(): Unit = {
     println("Twitter Future with ZIO: ")
 
-    val runtime: DefaultRuntime = new DefaultRuntime {}
+    val runtime: BootstrapRuntime = new BootstrapRuntime {}
     import zio.interop.twitter._
 
     val res1: TFuture[String] =

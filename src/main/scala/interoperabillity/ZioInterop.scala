@@ -1,11 +1,15 @@
 package interoperabillity
 
-import zio.{DefaultRuntime, IO, Task}
+import zio.internal.Platform
+import zio.{IO, Runtime, Task}
 
 /** Interop between ZIO and other stuff each call should be mapped to IO[E, T] **/
 object ZioInterop {
 
-  val runtime: DefaultRuntime = new DefaultRuntime {}
+  val runtime: Runtime[Unit] = new Runtime[Unit]() {
+    override val environment: Unit = ()
+    override val platform: Platform = Platform.default
+  }
 
   def withFinalTagless(): Unit = {
     println("ZIO with cats tagless final: ")
@@ -22,7 +26,7 @@ object ZioInterop {
     show(res22)(runtime)
 
     {
-      implicit val r: DefaultRuntime = runtime
+      implicit val r = runtime
       val res3: Task[Either[Int, String]] =
         Cases.taglessFinal.doEffect[Task, Int, String]("effect")
       val res33: IO[Int, String] = res3.mapError(_.getMessage.length).absolve
@@ -73,7 +77,9 @@ object ZioInterop {
     show(res11)(runtime)
 
     val res2: Task[Either[Int, String]] =
-      Task.fromTwitterFuture(Task(Cases.twitter.doFutureEither[Int, String]("twitter future either")))
+      Task.fromTwitterFuture(
+        Task(Cases.twitter.doFutureEither[Int, String]("twitter future either"))
+      )
     val res22: IO[Int, String] = res2.mapError(_.getMessage.length).absolve
     show(res22)(runtime)
   }
@@ -91,6 +97,6 @@ object ZioInterop {
     show(res22)(runtime)
   }
 
-  def show[E, T](io: IO[E, T])(implicit runtime: DefaultRuntime): Unit =
+  def show[E, T](io: IO[E, T])(implicit runtime: Runtime[Unit]): Unit =
     println(" - " + runtime.unsafeRun(io))
 }

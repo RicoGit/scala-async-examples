@@ -1,7 +1,7 @@
 package interoperabillity
 
 import cats.effect.{ContextShift, IO => CatsIO}
-import zio.DefaultRuntime
+import zio.BootstrapRuntime
 
 import scala.concurrent.duration.Duration
 import scala.concurrent.{Await, ExecutionContext, Future}
@@ -91,7 +91,7 @@ object ScalaFuturesInterop {
   def withZio(): Unit = {
     println("Scala Future with ZIO: ")
 
-    val runtime: DefaultRuntime = new DefaultRuntime {}
+    val runtime: BootstrapRuntime = new BootstrapRuntime {}
     implicit val ex: ExecutionContext = ExecutionContext.global
 
     val res1: Future[String] =

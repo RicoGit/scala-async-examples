@@ -1,7 +1,7 @@
 package interoperabillity
 
 import cats.effect.{ContextShift, IO => CatsIO}
-import zio.{DefaultRuntime, Task}
+import zio.{BootstrapRuntime, Task}
 
 import scala.concurrent.ExecutionContext
 
@@ -53,7 +53,9 @@ object CatsIOInterop {
     show(res11)
 
     val res2: CatsIO[Either[Int, String]] =
-      futureToAsync[CatsIO, Either[Int, String]](Cases.twitter.doFutureEither[Int, String]("twitter future either"))
+      futureToAsync[CatsIO, Either[Int, String]](
+        Cases.twitter.doFutureEither[Int, String]("twitter future either")
+      )
     show(res2)
   }
 
@@ -77,7 +79,7 @@ object CatsIOInterop {
 
     import cats.effect.implicits._
     import zio.interop.catz._
-    implicit val runtime: DefaultRuntime = new DefaultRuntime {}
+    implicit val runtime: BootstrapRuntime = new BootstrapRuntime {}
 
     val res1: Task[Either[RuntimeException, String]] =
       Cases.zio.doZio[RuntimeException, String]("zio").either
