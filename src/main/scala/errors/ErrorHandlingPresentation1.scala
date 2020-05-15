@@ -10,7 +10,7 @@ import scala.util.control.{NoStackTrace, NonFatal}
 import scala.util.{Failure, Try}
 
 // Error handling for PURE function.
-object ErrorHandling {
+object ErrorHandlingPresentation1 {
 
   // Bad! Non-total definition. The method signature is lying. Error isn't reflected in the signature of the method.
   def parseString(str: String): Int = str.toInt
@@ -41,10 +41,14 @@ object ErrorHandling {
     def fn(): String = throw new Exception()
 
     // BAD! don't catch Throwable
-    try { fn() } catch { case err: Throwable => println(err) }
+    try {
+      fn()
+    } catch { case err: Throwable => println(err) }
 
     // use catch NonFatal
-    try { fn() } catch { case NonFatal(err) => println(err) }
+    try {
+      fn()
+    } catch { case NonFatal(err) => println(err) }
 
     // or better scala.util.Try
     Try(fn()).failed.map(println)
@@ -53,7 +57,7 @@ object ErrorHandling {
     nonFatalCatch[String].either(fn()).left.map(println)
   }
 
-  /** Avoid to create Exception if you return errors without throwing */
+  /** Avoid creating an Exception if you return errors without throwing. */
   def createExceptions() {
 
     // BAD. When error created it'll constructs stack trace. In many cases you don't need it.
@@ -67,7 +71,10 @@ object ErrorHandling {
       override def fillInStackTrace(): Throwable = this
     }
 
-    // Perfect
+    // Good (baseline)
+    case class MyError4(msg: String) extends Exception(msg) with NoStackTrace
+
+    // Perfect (without Throwable)
     case class MyError(msg: String)
     case object MyErrorObject
 
@@ -245,7 +252,7 @@ object ErrorHandling {
 
     val result = for {
       v1 <- e1.errorAs[Throwable]
-      v2 <- e1.mapError(err => new Exception(err.msg))
+      v2 <- e1.leftMap(err => new Exception(err.msg))
       v3 <- e2
     } yield ()
 
@@ -277,7 +284,9 @@ object ErrorHandling {
 
     val right: EitherT[IO, ParseErr, String] = EitherT.right(IO("value"))
     val left: EitherT[IO, ParseErr, String] = EitherT.leftT(ParseErr("parse err"))
-    val error = EitherT(IO.raiseError[Either[ParseErr, String]](new Exception("exception")))
+    val error: EitherT[IO, ParseErr, String] = EitherT(
+      IO.raiseError[Either[ParseErr, String]](new Exception("exception"))
+    )
 
     val res1 = for {
       value <- right

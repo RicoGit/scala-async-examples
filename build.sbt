@@ -15,8 +15,10 @@ libraryDependencies ++= Seq(
   "com.twitter" %% "util-core" % "19.12.0",
   "io.catbird" %% "catbird-effect" % "19.10.0",
 // Cats Effect
-  "org.typelevel" %% "cats-effect" % "2.0.0",
+  "org.typelevel" %% "cats-effect" % "2.1.3",
   "co.fs2" %% "fs2-core" % "2.2.1",
 // Monix
   "io.monix" %% "monix" % "3.1.0-2156c0e",
+// Newtypes
+  "io.estatico" %% "newtype" % "0.4.3"
 )
